@@ -8,38 +8,6 @@ Config::Element::Element(const std::string& name){
 	this->name = name;
 }
 
-void Config::Element::set(const std::string& value, const std::size_t i){
-	if(i > values.size()){
-		values.resize(i);
-	}
-
-	values[i] = value;
-}
-
-void Config::Element::set(const int value, const std::size_t i){
-	set(std::to_string(value), i);
-}
-
-void Config::Element::set(const float value, const std::size_t i){
-	set(std::to_string(value), i);
-}
-
-std::string Config::Element::getString(const std::size_t i){
-	if(values.size() && i < values.size()){
-		return values[i];
-	}
-
-	throw std::out_of_range("index out of range");
-}
-
-int Config::Element::getInt(const std::size_t i){
-	return std::stoi(getString(i));
-}
-
-float Config::Element::getFloat(const std::size_t i){
-	return std::stof(getString(i));
-}
-
 // Config
 
 bool Config::testString(const char c){
@@ -56,6 +24,86 @@ bool Config::testString(const char c){
 	}
 
 	return false;
+}
+
+bool Config::accept(const std::string& token){
+	return token == get();
+}
+
+void Config::expect(const std::string& token){
+	if(token != get()){
+		throw std::invalid_argument("unexpected token, was \""+get()+"\" expected \""+token+"\"");
+	}
+
+	next();
+}
+
+void Config::next(){
+	if(index < tokens.size()-1){
+		index++;
+	}
+}
+
+const std::string& Config::get(){
+	return tokens[index];
+}
+
+void Config::parseVar(std::vector<Element>& parent){
+	Element e(get());
+	next();
+	expect("=");
+
+	if(accept("[")){
+		parseArray(e);
+	}
+	else if(accept("{")){
+		parseObject(e);
+	}
+	else{
+		e.values.push_back(get());
+		next();
+		expect(";");
+	}
+
+	parent.push_back(e);
+}
+
+void Config::parseArray(Element& e){
+	expect("[");
+
+	while(!accept("]")){
+		if(accept("{")){
+			parseObject(e);
+		}
+		else{
+			e.values.push_back(get());
+			next();
+		}
+
+		while(accept(",")){
+			next();
+		}
+	}
+
+	expect("]");
+
+	if(accept(";")){ // optional
+		next();
+	}
+}
+
+void Config::parseObject(Element& e){
+	expect("{");
+
+	while(!accept("}")){
+		parseVar(e.children);
+	}
+
+	expect("}");
+
+	if(accept(";")){ // optional
+		next();
+	}
 }
 
 void Config::preprocess(std::ifstream& file){
@@ -128,17 +176,15 @@ void Config::tokenize(){
 		token += c;
 		mask = false;
 	}
-
-	// FIXME: remove test
-	for(auto t : tokens){
-		std::cout<<t<<std::endl;
-	}
 }
 
 void Config::parse(){
 	index = 0;
+	elements.clear();
 
-	// ...
+	while(index != tokens.size()-1){
+		parseVar(elements);
+	}
 }
 
 bool Config::read(const std::string& path){
@@ -155,4 +201,18 @@ bool Config::read(const std::string& path){
 	parse();
 
 	return true;
+}
+
+void Config::test(){
+	for(auto e : elements){
+		std::cout<<e.name<<std::endl;
+
+		for(auto str : e.values){
+			std::cout<<"val: "<<str<<std::endl;
+		}
+
+		std::cout<<"children: "<<e.children.size()<<std::endl;
+
+		std::cout<<std::endl;
+	}
 }

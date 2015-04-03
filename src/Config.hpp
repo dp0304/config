@@ -13,21 +13,15 @@ class Config{
 			public:
 				std::string name;
 				std::vector<std::string> values;
+				std::vector<Element> children;
 
 				Element(const std::string& name);
-
-				void set(const std::string& value, const std::size_t i = 0);
-				void set(const int value, const std::size_t i = 0);
-				void set(const float value, const std::size_t i = 0);
-
-				std::string getString(const std::size_t i = 0);
-				int getInt(const std::size_t i = 0);
-				float getFloat(const std::size_t i = 0);
 		};
 
 	private:
 		static const std::set<char> delimeter;
 
+		// preprocessor, tokenizer and parser
 		std::string input;
 		std::size_t index;
 		std::vector<std::string> tokens;
@@ -35,10 +29,24 @@ class Config{
 
 		bool testString(const char c);
 
+		bool accept(const std::string& token);
+		void expect(const std::string& token);
+		void next();
+		const std::string& get();
+
+		void parseVar(std::vector<Element>& parent);
+		void parseArray(Element& e);
+		void parseObject(Element& e);
+
 		void preprocess(std::ifstream& file);
 		void tokenize();
 		void parse();
 
+		// top level elements
+		std::vector<Element> elements;
+
 	public:
 		bool read(const std::string& path);
+
+		void test();
 };
