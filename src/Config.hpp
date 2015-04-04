@@ -1,6 +1,5 @@
 #pragma once
 
-#include <iostream> // FIXME: delete
 #include <string>
 #include <fstream>
 #include <vector>
