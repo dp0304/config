@@ -8,6 +8,98 @@ Config::Element::Element(const std::string& name){
 	this->name = name;
 }
 
+Config::Element::Element(){
+
+}
+
+void Config::Element::set(const std::string& value, const std::size_t i){
+	if(i >= values.size()){
+		values.resize(i+1);
+	}
+
+	values[i] = value;
+}
+
+void Config::Element::set(const int value, const std::size_t i){
+	set(std::to_string(value), i);
+}
+
+void Config::Element::set(const float value, const std::size_t i){
+	set(std::to_string(value), i);
+}
+
+void Config::Element::operator=(const std::string& value){
+	set(value);
+}
+
+void Config::Element::operator=(const int value){
+	set(value);
+}
+
+void Config::Element::operator=(const float value){
+	set(value);
+}
+
+void Config::Element::operator=(const double value){
+	set(float(value));
+}
+
+const std::string& Config::Element::getName(){
+	return name;
+}
+
+const std::string& Config::Element::getString(const std::size_t i){
+	if(i >= values.size()){
+		values.resize(i+1);
+		values[i] = "null";
+	}
+
+	return values[i];
+}
+
+const int Config::Element::getInt(const std::size_t i){
+	return std::stoi(getString(i));
+}
+
+const float Config::Element::getFloat(const std::size_t i){
+	return std::stof(getString(i));
+}
+
+Config::Element& Config::Element::operator[](const std::string& name){
+	for(auto i = children.begin(); i != children.end(); i++){
+		if((*i).name == name){
+			return *i;
+		}
+	}
+
+	children.push_back(Element(name));
+
+	return children.back();
+}
+
+bool Config::Element::exists(const std::string& name){
+	for(auto e : children){
+		if(e.name == name){
+			return true;
+		}
+	}
+
+	return false;
+}
+
+void Config::Element::remove(const std::string& name){
+	for(auto i = children.begin(); i != children.end(); i++){
+		if((*i).name == name){
+			children.erase(i);
+			return;
+		}
+	}
+}
+
+void Config::Element::clear(){
+	children.clear();
+}
+
 // Config
 
 bool Config::testString(const char c){
@@ -180,10 +272,10 @@ void Config::tokenize(){
 
 void Config::parse(){
 	index = 0;
-	elements.clear();
+	root.clear();
 
 	while(index != tokens.size()-1){
-		parseVar(elements);
+		parseVar(root.children);
 	}
 }
 
@@ -203,16 +295,33 @@ bool Config::read(const std::string& path){
 	return true;
 }
 
-void Config::test(){
-	for(auto e : elements){
-		std::cout<<e.name<<std::endl;
+bool Config::write(const std::string& path){
+	std::ofstream file(path);
 
-		for(auto str : e.values){
-			std::cout<<"val: "<<str<<std::endl;
-		}
-
-		std::cout<<"children: "<<e.children.size()<<std::endl;
-
-		std::cout<<std::endl;
+	if(!file.good()){
+		file.close();
+		return false;
 	}
+
+	// ...
+
+	file.close();
+
+	return true;
+}
+
+Config::Element& Config::operator[](const std::string& name){
+	return root[name];
+}
+
+bool Config::exists(const std::string& name){
+	return root.exists(name);
+}
+
+void Config::remove(const std::string& name){
+	root.remove(name);
+}
+
+void Config::clear(){
+	root.clear();
 }

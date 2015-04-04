@@ -10,12 +10,34 @@
 class Config{
 	public:
 		class Element{
-			public:
+			friend Config;
+
+			private:
 				std::string name;
 				std::vector<std::string> values;
 				std::vector<Element> children;
 
+			public:
 				Element(const std::string& name);
+				Element();
+
+				void set(const std::string& value, const std::size_t i = 0);
+				void set(const int value, const std::size_t i = 0);
+				void set(const float value, const std::size_t i = 0);
+				void operator=(const std::string& value);
+				void operator=(const int value);
+				void operator=(const float value);
+				void operator=(const double value);
+
+				const std::string& getName();
+				const std::string& getString(const std::size_t i = 0);
+				const int getInt(const std::size_t i = 0);
+				const float getFloat(const std::size_t i = 0);
+
+				Element& operator[](const std::string& name);
+				bool exists(const std::string& name);
+				void remove(const std::string& name);
+				void clear();
 		};
 
 	private:
@@ -42,11 +64,15 @@ class Config{
 		void tokenize();
 		void parse();
 
-		// top level elements
-		std::vector<Element> elements;
+		// top level element
+		Element root;
 
 	public:
 		bool read(const std::string& path);
+		bool write(const std::string& path);
 
-		void test();
+		Element& operator[](const std::string& name);
+		bool exists(const std::string& name);
+		void remove(const std::string& name);
+		void clear();
 };
