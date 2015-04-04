@@ -86,7 +86,7 @@ void main(){
 # Features that will be added in the future
 
 * keep comments on save
-* better parser error output
+* ~~better parser error output~~
 * nested arrays
 * array of objects
 
