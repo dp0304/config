@@ -41,6 +41,7 @@ class Config{
 		};
 
 	private:
+		static const unsigned int TABS;
 		static const std::set<char> delimeter;
 
 		// preprocessor, tokenizer and parser
@@ -63,6 +64,9 @@ class Config{
 		void preprocess(std::ifstream& file);
 		void tokenize();
 		void parse();
+
+		// output
+		void writeElement(std::ofstream& file, const Element& element, const unsigned int tabs = 0);
 
 		// top level element
 		Element root;

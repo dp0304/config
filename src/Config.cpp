@@ -1,5 +1,6 @@
 #include "Config.hpp"
 
+const unsigned int Config::TABS = 4;
 const std::set<char> Config::delimeter = {'=', ';', '[', ']', '{', '}', ','};
 
 // Element
@@ -51,7 +52,7 @@ const std::string& Config::Element::getName(){
 const std::string& Config::Element::getString(const std::size_t i){
 	if(i >= values.size()){
 		values.resize(i+1);
-		values[i] = "null";
+		values[i] = "";
 	}
 
 	return values[i];
@@ -164,15 +165,15 @@ void Config::parseArray(Element& e){
 	expect("[");
 
 	while(!accept("]")){
-		if(accept("{")){
-			parseObject(e);
-		}
-		else{
-			e.values.push_back(get());
+		e.values.push_back(get());
+		next();
+
+		if(accept(",")){
 			next();
 		}
 
 		while(accept(",")){
+			e.values.push_back("");
 			next();
 		}
 	}
@@ -202,7 +203,6 @@ void Config::preprocess(std::ifstream& file){
 	input = "";
 
 	std::string line;
-	bool first = true;
 	isstring = false;
 	mask = false;
 
@@ -212,7 +212,7 @@ void Config::preprocess(std::ifstream& file){
 				continue;
 			}
 
-			if(first && c == '#'){ // skip comments
+			if(!isstring && c == '#'){ // skip comments
 				break;
 			}
 
@@ -222,14 +222,11 @@ void Config::preprocess(std::ifstream& file){
 
 			input += c;
 			mask = false;
-			first = false;
 		}
 
 		if(isstring){
 			input += '\n';
 		}
-
-		first = true;
 	}
 }
 
@@ -279,6 +276,50 @@ void Config::parse(){
 	}
 }
 
+void Config::writeElement(std::ofstream& file, const Element& element, const unsigned int tabs){
+	if(!element.values.size() && !element.children.size()){
+		return;
+	}
+
+	for(unsigned int i = 0; i < tabs; i++){
+		file<<" ";
+	}
+
+	file<<element.name<<" = ";
+
+	if(element.children.size()){
+		file<<"{\n";
+
+		for(auto e : element.children){
+			writeElement(file, e, tabs+TABS);
+		}
+
+		for(unsigned int i = 0; i < tabs; i++){
+			file<<" ";
+		}
+
+		file<<"}";
+	}
+	else if(element.values.size() == 1){
+		file<<"\""<<element.values[0]<<"\";";
+	}
+	else{
+		file<<"[";
+
+		for(std::size_t i = 0; i < element.values.size(); i++){
+			file<<element.values[i];
+
+			if(i != element.values.size()-1){
+				file<<", ";
+			}
+		}
+
+		file<<"]";
+	}
+
+	file<<"\n";
+}
+
 bool Config::read(const std::string& path){
 	std::ifstream file(path);
 
@@ -303,7 +344,9 @@ bool Config::write(const std::string& path){
 		return false;
 	}
 
-	// ...
+	for(auto e : root.children){
+		writeElement(file, e);
+	}
 
 	file.close();
 

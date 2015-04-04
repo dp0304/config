@@ -6,7 +6,10 @@ int main(int argc, char** args){
 
 	// load cfg file
 	try{
-		cfg.read("test.cfg");
+		if(!cfg.read("in.cfg")){
+			std::cerr<<"Could not open config file!"<<std::endl;
+			return 1;
+		}
 	}
 	catch(std::invalid_argument& e){
 		std::cerr<<"Error reading config file!"<<std::endl;
@@ -14,8 +17,8 @@ int main(int argc, char** args){
 	}
 
 	// print out saved variables
-	std::cout<<cfg["parent"]["child"]["var"].getString()<<std::endl;
-	std::cout<<cfg["parent"]["child"]["nr"].getInt()<<std::endl;
+	std::cout<<cfg["parent"]["child"]["string"].getString()<<std::endl;
+	std::cout<<cfg["parent"]["child"]["integer"].getInt()<<std::endl;
 	std::cout<<cfg["parent"]["child"]["floating"].getFloat()<<std::endl;
 
 	// creates a new element if not existing yet
@@ -49,6 +52,27 @@ int main(int argc, char** args){
 	cfg.remove("not");
 
 	std::cout<<cfg.exists("not")<<std::endl;
+
+	// lets test indexing in arrays...
+	cfg.clear();
+	cfg.read("in2.cfg");
+
+	std::cout<<cfg["a"].getString(4)<<std::endl;
+
+	// write config
+	cfg.clear();
+
+	cfg["a"] = 123;
+	cfg["arr"].set("a", 0);
+	cfg["arr"].set("b", 1);
+	cfg["arr"].set("c", 4);
+	cfg["obj"]["var"] = "val";
+	cfg["obj"]["foo"]["bar"] = "val";
+
+	if(!cfg.write("out.cfg")){
+		std::cerr<<"Could not write config file!"<<std::endl;
+		return 2;
+	}
 
 	return 0;
 }
