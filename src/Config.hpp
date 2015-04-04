@@ -7,10 +7,6 @@
 #include <stdexcept>
 #include <locale>
 
-
-#include <iostream>
-
-
 class Config{
 	public:
 		class Element{
