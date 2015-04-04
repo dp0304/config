@@ -125,7 +125,7 @@ bool Config::accept(const std::string& token){
 
 void Config::expect(const std::string& token){
 	if(token != get()){
-		throw std::invalid_argument("unexpected token, was \""+get()+"\" expected \""+token+"\"");
+		throw std::invalid_argument("Unexpected token, was \""+get()+"\" expected \""+token+"\" in line "+std::to_string(tokens[index].line)+" at character "+std::to_string(tokens[index].character)+".");
 	}
 
 	next();
@@ -138,7 +138,7 @@ void Config::next(){
 }
 
 const std::string& Config::get(){
-	return tokens[index];
+	return tokens[index].token;
 }
 
 void Config::parseVar(std::vector<Element>& parent){
@@ -224,9 +224,7 @@ void Config::preprocess(std::ifstream& file){
 			mask = false;
 		}
 
-		if(isstring){
-			input += '\n';
-		}
+		input += '\n';
 	}
 }
 
@@ -237,9 +235,19 @@ void Config::tokenize(){
 	std::string token, deli;
 	isstring = false;
 	mask = false;
+	std::size_t line = 1;
+	std::size_t character = 0;
 
 	for(auto c : input){
 		if(testString(c)){
+			continue;
+		}
+
+		// count lines and character but skip new line
+		if(c == '\n'){
+			line++;
+			character = 0;
+
 			continue;
 		}
 
@@ -251,19 +259,20 @@ void Config::tokenize(){
 
 			// store token
 			if(!token.empty()){
-				tokens.push_back(token);
+				tokens.push_back(Token(token, line, character));
 				token = "";
 			}
 
 			// store delimeter
 			deli = c;
-			tokens.push_back(deli);
+			tokens.push_back(Token(deli, line, character));
 
 			continue;
 		}
 
 		token += c;
 		mask = false;
+		character = 0;
 	}
 }
 
@@ -276,6 +285,16 @@ void Config::parse(){
 	}
 }
 
+bool Config::isNumeric(const std::string& value){
+	for(auto c : value){
+		if(!std::isdigit(c, std::locale()) && c != '.' && c != '-'){
+			return false;
+		}
+	}
+
+	return true;
+}
+
 void Config::writeElement(std::ofstream& file, const Element& element, const unsigned int tabs){
 	if(!element.values.size() && !element.children.size()){
 		return;
@@ -284,6 +303,8 @@ void Config::writeElement(std::ofstream& file, const Element& element, const uns
 	for(unsigned int i = 0; i < tabs; i++){
 		file<<" ";
 	}
+
+	bool isnumeric = false;
 
 	file<<element.name<<" = ";
 
@@ -301,13 +322,28 @@ void Config::writeElement(std::ofstream& file, const Element& element, const uns
 		file<<"}";
 	}
 	else if(element.values.size() == 1){
-		file<<"\""<<element.values[0]<<"\";";
+		if(isNumeric(element.values[0])){
+			file<<element.values[0]<<";";
+		}
+		else{
+			file<<"\""<<element.values[0]<<"\";";
+		}
 	}
 	else{
 		file<<"[";
 
 		for(std::size_t i = 0; i < element.values.size(); i++){
+			isnumeric = isNumeric(element.values[i]);
+
+			if(!isnumeric){
+				file<<"\"";
+			}
+
 			file<<element.values[i];
+
+			if(!isnumeric){
+				file<<"\"";
+			}
 
 			if(i != element.values.size()-1){
 				file<<", ";

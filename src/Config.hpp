@@ -5,6 +5,11 @@
 #include <vector>
 #include <set>
 #include <stdexcept>
+#include <locale>
+
+
+#include <iostream>
+
 
 class Config{
 	public:
@@ -40,13 +45,25 @@ class Config{
 		};
 
 	private:
+		struct Token{
+			std::string token;
+			std::size_t line, character;
+
+			Token(const std::string& token, const std::size_t line, const std::size_t character):
+				token(token),
+				line(line),
+				character(character){
+
+			}
+		};
+
 		static const unsigned int TABS;
 		static const std::set<char> delimeter;
 
 		// preprocessor, tokenizer and parser
 		std::string input;
 		std::size_t index;
-		std::vector<std::string> tokens;
+		std::vector<Token> tokens;
 		bool isstring, mask;
 
 		bool testString(const char c);
@@ -65,6 +82,7 @@ class Config{
 		void parse();
 
 		// output
+		bool isNumeric(const std::string& value);
 		void writeElement(std::ofstream& file, const Element& element, const unsigned int tabs = 0);
 
 		// top level element

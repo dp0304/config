@@ -53,16 +53,12 @@ int main(int argc, char** args){
 
 	std::cout<<cfg.exists("not")<<std::endl;
 
-	// lets test indexing in arrays...
-	cfg.clear();
-	cfg.read("in2.cfg");
-
-	std::cout<<cfg["a"].getString(4)<<std::endl;
-
 	// write config
 	cfg.clear();
 
 	cfg["a"] = 123;
+	cfg["b"] = 1.23;
+	cfg["b"] = -1.23;
 	cfg["arr"].set("a", 0);
 	cfg["arr"].set("b", 1);
 	cfg["arr"].set("c", 4);
