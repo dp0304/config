@@ -101,6 +101,10 @@ void Config::Element::clear(){
 	children.clear();
 }
 
+const std::vector<Config::Element>& Config::Element::getAll(){
+	return children;
+}
+
 // Config
 
 bool Config::testString(const char c){
@@ -403,4 +407,8 @@ void Config::remove(const std::string& name){
 
 void Config::clear(){
 	root.clear();
+}
+
+const std::vector<Config::Element>& Config::getAll(){
+	return root.children;
 }

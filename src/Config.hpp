@@ -38,6 +38,8 @@ class Config{
 				bool exists(const std::string& name);
 				void remove(const std::string& name);
 				void clear();
+
+				const std::vector<Element>& getAll();
 		};
 
 	private:
@@ -92,4 +94,6 @@ class Config{
 		bool exists(const std::string& name);
 		void remove(const std::string& name);
 		void clear();
+
+		const std::vector<Element>& getAll();
 };
