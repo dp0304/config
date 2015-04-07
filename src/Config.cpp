@@ -116,6 +116,10 @@ bool Config::testString(const char c){
 		}
 	}
 
+	if(mask && (c != '"' && c != '\'')){
+		mask = false;
+	}
+
 	if(!mask && (c == '"' || c == '\'')){ // strings " or '
 		isstring = !isstring;
 	}
@@ -220,15 +224,14 @@ void Config::preprocess(std::ifstream& file){
 				break;
 			}
 
-			if(testString(c)){
-				continue;
-			}
+			testString(c);
 
 			input += c;
-			mask = false;
 		}
 
-		input += '\n';
+		if(isstring){
+			input += '\n';
+		}
 	}
 }
 
@@ -275,7 +278,6 @@ void Config::tokenize(){
 		}
 
 		token += c;
-		mask = false;
 		character = 0;
 	}
 }
