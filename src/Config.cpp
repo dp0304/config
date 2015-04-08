@@ -1,5 +1,5 @@
 #include "Config.hpp"
-#include <iostream>
+
 const unsigned int Config::TABS = 4;
 const std::set<char> Config::delimeter = {'=', ';', '[', ']', '{', '}', ','};
 
