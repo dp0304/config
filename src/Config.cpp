@@ -1,5 +1,5 @@
 #include "Config.hpp"
-
+#include <iostream>
 const unsigned int Config::TABS = 4;
 const std::set<char> Config::delimeter = {'=', ';', '[', ']', '{', '}', ','};
 
@@ -116,13 +116,11 @@ bool Config::testString(const char c){
 		}
 	}
 
-	if(mask && (c != '"' && c != '\'')){
-		mask = false;
-	}
-
 	if(!mask && (c == '"' || c == '\'')){ // strings " or '
 		isstring = !isstring;
 	}
+
+	mask = false; // reset mask
 
 	return false;
 }

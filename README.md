@@ -27,6 +27,9 @@ object = {
 }
 ```
 
+Variable, array and object names can be anything, except of double quotes ("). Spaces outside of strings will be skipped, so a name like "my var" will be parsed to "myvar".
+For strings you can also use single quotes. Currently there is no support for arrays of objects or multi dimensional arrays.
+
 # Usage
 
 ```C++
@@ -82,6 +85,9 @@ void main(){
 	cfg.clear();
 }
 ```
+
+The read() method can throw an std::invalid_argument exception, which signals that the config file read cannot be parsed completly. Everything until the error will be kept and what() returns in which line and at which character the error occured.
+If you store data in an variable that also contain child variables, it will be an objects. Which means all data in the parent object won't be stored on save.
 
 # Features that will be added in the future
 

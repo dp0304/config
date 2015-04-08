@@ -20,7 +20,8 @@ int main(int argc, char** args){
 	std::cout<<cfg["parent"]["child"]["string"].getString()<<std::endl;
 	std::cout<<cfg["parent"]["child"]["integer"].getInt()<<std::endl;
 	std::cout<<cfg["parent"]["child"]["floating"].getFloat()<<std::endl;
-	std::cout<<cfg["a"].getString()<<std::endl;
+	std::cout<<cfg["str"].getString()<<std::endl;
+	std::cout<<cfg["single_quote"].getString()<<std::endl;
 
 	// creates a new element if not existing yet
 	std::cout<<cfg["not"]["existing"]["foo"].getName()<<std::endl;
