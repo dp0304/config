@@ -22,4 +22,4 @@ if (MSVC)
 endif()
 
 add_subdirectory(src)
-add_subdirectory(runnable)
+#add_subdirectory(runnable)
