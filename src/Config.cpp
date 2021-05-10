@@ -1,4 +1,4 @@
-#include "Config.hpp"
+#include "../include/ezconfig/Config.hpp"
 
 const unsigned int Config::TABS = 4;
 const std::set<char> Config::delimeter = {'=', ';', '[', ']', '{', '}', ','};
