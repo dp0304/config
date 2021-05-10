@@ -12,7 +12,8 @@ int main(int argc, char** args){
 		}
 	}
 	catch(std::invalid_argument& e){
-		std::cerr<<"Error reading config file!"<<std::endl;
+		std::cerr<<"Error reading config file! Program will FAIL. "
+             "Examine if your CFG file is sane."<<std::endl;
 		std::cerr<<e.what()<<std::endl;
 	}
 
