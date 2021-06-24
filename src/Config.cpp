@@ -213,18 +213,27 @@ void Config::preprocess(std::ifstream& file){
 	mask = false;
 
 	while(std::getline(file, line)){
+	    int idx_char = 0;
 		for(auto c : line){
 			if(!isstring && (c == ' ' || c == '\t')){ // skip white space
 				continue;
 			}
 
-			if(!isstring && c == '#'){ // skip comments
-				break;
-			}
+            if(idx_char == 0){
+                if(!isstring && c == '#'){ // skip comments
+                  break;
+                }
+
+                if(!isstring && c == ';'){ // skip comments
+                  break;
+                }
+            }
+
 
 			testString(c);
 
 			input += c;
+            idx_char++;
 		}
 
 		if(isstring){
