@@ -379,8 +379,13 @@ bool Config::read(const std::string& path){
 
 	preprocess(file);
 	file.close();
+
 	tokenize();
-	parse();
+
+    if(tokens.size() == 0){ //case when nothing in file
+      return false;
+    }
+    parse();
 
 	return true;
 }

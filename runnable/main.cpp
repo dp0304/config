@@ -1,5 +1,5 @@
 #include <iostream>
-#include "../include/ezconfig/Config.hpp"
+#include <ezconfig/Config.hpp>
 
 int main(int argc, char** args){
 	Config cfg;
