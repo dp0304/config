@@ -18,11 +18,11 @@ int main(int argc, char** args){
 	}
 
 	// print out saved variables
+    std::cout<<cfg["str"].getString()<<std::endl;
+    std::cout<<cfg["single_quote"].getString()<<std::endl;
 	std::cout<<cfg["parent"]["child"]["string"].getString()<<std::endl;
 	std::cout<<cfg["parent"]["child"]["integer"].getInt()<<std::endl;
 	std::cout<<cfg["parent"]["child"]["floating"].getFloat()<<std::endl;
-	std::cout<<cfg["str"].getString()<<std::endl;
-	std::cout<<cfg["single_quote"].getString()<<std::endl;
 
     // accessing non-existing target
     std::cout<<"(getting blahblah_nonexisting) : [";

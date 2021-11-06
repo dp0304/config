@@ -220,13 +220,17 @@ void Config::preprocess(std::ifstream& file){
 			}
 
             if(idx_char == 0){
-                if(!isstring && c == '#'){ // skip comments
+                if(!isstring && c == '#'){ // skip fronting comments
                   break;
                 }
 
-                if(!isstring && c == ';'){ // skip comments
+                if(!isstring && c == ';'){ // skip fronting comments
                   break;
                 }
+            }else{
+              if(!isstring && c == '#'){ // skip comments
+                break;
+              }
             }
 
 
@@ -381,10 +385,9 @@ bool Config::read(const std::string& path){
 	file.close();
 
 	tokenize();
-
-    if(tokens.size() == 0){ //case when nothing in file
-      return false;
-    }
+//    if(tokens.size() == 0){ //case when nothing in file
+//      return false;
+//    }
     parse();
 
 	return true;
