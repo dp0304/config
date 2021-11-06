@@ -297,6 +297,10 @@ void Config::parse(){
 	index = 0;
 	root.clear();
 
+	if(tokens.size() <= 0){
+	  return;
+	}
+
 	while(index != tokens.size()-1){
 		parseVar(root.children);
 	}
