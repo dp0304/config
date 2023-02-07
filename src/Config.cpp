@@ -1,4 +1,4 @@
-#include "Config.hpp"
+#include "../include/ezconfig/Config.hpp"
 
 const unsigned int Config::TABS = 4;
 const std::set<char> Config::delimeter = {'=', ';', '[', ']', '{', '}', ','};
@@ -213,18 +213,31 @@ void Config::preprocess(std::ifstream& file){
 	mask = false;
 
 	while(std::getline(file, line)){
+	    int idx_char = 0;
 		for(auto c : line){
 			if(!isstring && (c == ' ' || c == '\t')){ // skip white space
 				continue;
 			}
 
-			if(!isstring && c == '#'){ // skip comments
-				break;
-			}
+            if(idx_char == 0){
+                if(!isstring && c == '#'){ // skip fronting comments
+                  break;
+                }
+
+                if(!isstring && c == ';'){ // skip fronting comments
+                  break;
+                }
+            }else{
+              if(!isstring && c == '#'){ // skip comments
+                break;
+              }
+            }
+
 
 			testString(c);
 
 			input += c;
+            idx_char++;
 		}
 
 		if(isstring){
@@ -283,6 +296,10 @@ void Config::tokenize(){
 void Config::parse(){
 	index = 0;
 	root.clear();
+
+	if(tokens.size() <= 0){
+	  return;
+	}
 
 	while(index != tokens.size()-1){
 		parseVar(root.children);
@@ -370,8 +387,12 @@ bool Config::read(const std::string& path){
 
 	preprocess(file);
 	file.close();
+
 	tokenize();
-	parse();
+//    if(tokens.size() == 0){ //case when nothing in file
+//      return false;
+//    }
+    parse();
 
 	return true;
 }

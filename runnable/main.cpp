@@ -1,27 +1,32 @@
 #include <iostream>
-#include "Config.hpp"
+#include <ezconfig/Config.hpp>
 
 int main(int argc, char** args){
 	Config cfg;
 
 	// load cfg file
 	try{
-		if(!cfg.read("in.cfg")){
+		if(!cfg.read("../../in.cfg")){//set path for cfg
 			std::cerr<<"Could not open config file!"<<std::endl;
 			return 1;
 		}
 	}
 	catch(std::invalid_argument& e){
-		std::cerr<<"Error reading config file!"<<std::endl;
+		std::cerr<<"Error reading config file! Program will FAIL. "
+             "Examine if your CFG file is sane."<<std::endl;
 		std::cerr<<e.what()<<std::endl;
 	}
 
 	// print out saved variables
+    std::cout<<cfg["str"].getString()<<std::endl;
+    std::cout<<cfg["single_quote"].getString()<<std::endl;
 	std::cout<<cfg["parent"]["child"]["string"].getString()<<std::endl;
 	std::cout<<cfg["parent"]["child"]["integer"].getInt()<<std::endl;
 	std::cout<<cfg["parent"]["child"]["floating"].getFloat()<<std::endl;
-	std::cout<<cfg["str"].getString()<<std::endl;
-	std::cout<<cfg["single_quote"].getString()<<std::endl;
+
+    // accessing non-existing target
+    std::cout<<"(getting blahblah_nonexisting) : [";
+    std::cout<<cfg["blahblah_nonexisting"].getString()<<"]"<<std::endl;
 
 	// creates a new element if not existing yet
 	std::cout<<cfg["not"]["existing"]["foo"].getName()<<std::endl;

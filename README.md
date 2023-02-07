@@ -1,6 +1,10 @@
-# config
+# EzConfig
 
 Simple C++ config reader and writer.
+
+Added cmake build script for [original `config` repo](https://github.com/dp0304/config).
+
+
 
 # Format
 
